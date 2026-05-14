@@ -3,27 +3,27 @@ con = sqlite3.connect('database.db')
 cur = con.cursor()
 
 cur.execute(
-    "CREATE TABLE IF NOT EXISTS users(UserID TEXT PRIMARY KEY," \
-    "UserName TEXT," \
-    "email TEXT," \
-    "PhoneNum TEXT," \
+    "CREATE TABLE IF NOT EXISTS users(UserID TEXT(50) PRIMARY KEY," \
+    "UserName TEXT(100)," \
+    "email TEXT(200)," \
+    "PhoneNum TEXT(50)," \
     "JoinDate DATE)" \
 )
 
 con.commit()
 
 cur.execute(
-    "CREATE TABLE IF NOT EXISTS a_details(TaskID TEXT PRIMARY KEY," \
-    "TaskName TEXT," \
-    "TaskDesc TEXT)" \
+    "CREATE TABLE IF NOT EXISTS a_details(TaskID TEXT(50) PRIMARY KEY," \
+    "TaskName TEXT(100)," \
+    "TaskDesc TEXT(300))" \
 )
 
 con.commit()
 
 cur.execute(
-    "CREATE TABLE IF NOT EXISTS a_status(TaskID TEXT," \
-    "UserID TEXT," \
-    "isComplete TEXT," \
+    "CREATE TABLE IF NOT EXISTS a_status(TaskID TEXT(50)," \
+    "UserID TEXT(50)," \
+    "isComplete TEXT(50)," \
     "DueDate DATE," \
     "FOREIGN KEY (TaskID) REFERENCES a_details(TaskID)," \
     "FOREIGN KEY(UserID) REFERENCES users(UserID)," \
@@ -31,13 +31,13 @@ cur.execute(
 )
 
 cur.execute(
-    "CREATE TABLE IF NOT EXISTS team_det(TeamID TEXT PRIMARY KEY," \
-    "TeamName TEXT)" \
+    "CREATE TABLE IF NOT EXISTS team_det(TeamID TEXT(50) PRIMARY KEY," \
+    "TeamName TEXT(80))" \
 )
 
 cur.execute(
-    "CREATE TABLE IF NOT EXISTS team_mem(TeamID TEXT," \
-    "UserID TEXT," \
+    "CREATE TABLE IF NOT EXISTS team_mem(TeamID TEXT(50)," \
+    "UserID TEXT(50)," \
     "TeamJoinDate DATE," \
     "FOREIGN KEY(TeamID) REFERENCES team_det(TeamID)," \
     "FOREIGN KEY(UserID) REFERENCES users(UserID)," \
