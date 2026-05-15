@@ -1,4 +1,6 @@
 from .extensions import db
+from datetime import date
+from config import session
 
 class ExampleRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -52,3 +54,4 @@ class team_mem(db.Model):
 
     def __repr__(self):
         return f"<Team Member: User {self.UserID} in Team {self.TeamID}>"
+    

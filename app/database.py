@@ -1,4 +1,6 @@
 import sqlite3
+from config import session
+
 con = sqlite3.connect('database.db')
 cur = con.cursor()
 
@@ -30,10 +32,14 @@ cur.execute(
     "PRIMARY KEY(TaskID, UserID))" \
 )
 
+con.commit()
+
 cur.execute(
     "CREATE TABLE IF NOT EXISTS team_det(TeamID TEXT(50) PRIMARY KEY," \
     "TeamName TEXT(80))" \
 )
+
+con.commit()
 
 cur.execute(
     "CREATE TABLE IF NOT EXISTS team_mem(TeamID TEXT(50)," \
@@ -43,6 +49,8 @@ cur.execute(
     "FOREIGN KEY(UserID) REFERENCES users(UserID)," \
     "PRIMARY KEY(TeamID, UserID))" \
 )
+
+con.commit()
 
 cur.execute("""
     INSERT INTO users VALUES
@@ -54,6 +62,8 @@ cur.execute("""
         ('106', 'Dave', 'myemail@site.com', '152-923-XXXX', '2021-05-19')       
 """)
 
+con.commit()
+
 cur.execute("""
     INSERT INTO a_details VALUES        
         ('12345', 'Project 2', 'Create tables.'),
@@ -63,6 +73,8 @@ cur.execute("""
         ('32120', 'Gantt Chart', 'Submit your chart as an Excel sheet'),
         ('09876', 'Formal Logic Ch.7 Exercises', 'Submit your work via screenshot') 
 """)
+
+con.commit()
 
 cur.execute("""
     INSERT INTO a_status VALUES
@@ -74,6 +86,7 @@ cur.execute("""
         ('09876', '101', 'In Progress', '2026-04-21')      
 """)
 
+con.commit()
 
 cur.execute("""
     INSERT INTO team_det VALUES
@@ -81,6 +94,8 @@ cur.execute("""
         ('2398', 'Art Club'),
         ('9842', 'WuLug')
 """)
+
+con.commit()
 
 cur.execute("""
     INSERT INTO team_mem VALUES
@@ -90,3 +105,5 @@ cur.execute("""
         ('2398', '104', '2024-08-19'),
         ('9842', '105', '2025-03-11')
 """)
+
+con.commit()
