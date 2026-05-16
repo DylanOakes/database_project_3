@@ -107,6 +107,56 @@ def add_assignment():
         
         return redirect(url_for('assignments.html'))
 
+
+@main.route('/assignments/delete/<string:task_id>/<string:user_id>')
+def delete_assignment(task_id, user_id):
+    task = a_status.query.filter_by(TaskID=task_id, UserID=user_id).first_or_404()
+    
+    db.session.delete(task)
+    db.session.commit()
+
+    flash('Assignment deleted', 'warning')
+    return redirect(url_for('main.assignments'))
+
+
+@main.route('/teams')
+def teams():
+    data = team_det.query.all()
+    return render_template('teams.html', teams=data)
+
+@main.route('/teams/add', methods=['GET', 'POST'])
+def add_team():
+    user = users.query.all()
+
+    if request.method == 'POST':
+        t_id = request.form['team_id']
+        u_id = request.form['user_id']
+        t_name = request.form['team_name']
+        join_date = request.form['join_date']
+
+        if not t_id.strip():
+            flash('Team ID is required.', 'error')
+            return redirect(url_for('main.add_team'))
+        
+        if not u_id.strip():
+            flash('User ID is required.', 'error')
+            return redirect(url_for('main.add_team'))
+
+        if not t_name.strip():
+            flash('Team Name is required.', 'error')
+            return redirect(url_for('main.add_team'))
+
+        teams = team_det(TeamID=t_id, UserID=u_id,TeamName=t_name)
+        db.session.add(teams)
+        db.session.flush()
+
+        members = team_mem(TeamID=t_id, UserID=u_id, TeamJoinDate=join_date)
+        db.session.add(members)
+        db.session.commit()
+
+        flash('Team added successfully', 'success')
+        return redirect(url_for('main.teams'))
+
 ## @main.route("/")
 ## def index():
 ##    records = ExampleRecord.query.order_by(ExampleRecord.id.desc()).all()
