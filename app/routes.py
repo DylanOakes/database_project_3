@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from datetime import datetime
 from .extensions import db
 
 from .models import (
@@ -157,8 +156,4 @@ def add_team():
         flash('Team added successfully', 'success')
         return redirect(url_for('main.teams'))
 
-## @main.route("/")
-## def index():
-##    records = ExampleRecord.query.order_by(ExampleRecord.id.desc()).all()
-##    return render_template("index.html", records=records)
 

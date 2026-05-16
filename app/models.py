@@ -1,6 +1,4 @@
 from .extensions import db
-from datetime import date
-from config import session
 
 class ExampleRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
