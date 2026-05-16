@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
+from sqlalchemy import select, func
 from .extensions import db
 
 from .models import (
@@ -18,7 +19,10 @@ def index():
 
 @main.route('/users')
 def users():
-    all_users = users.query.all()
+    items = select(users)
+    all_users = db.session.execute(items).scalars().all()
+
+    # all_users = users.query.all()
     return render_template('users.html', users=all_users)
 
 @main.route('/users/add', methods=['GET', 'POST'])

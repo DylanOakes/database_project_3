@@ -1,11 +1,5 @@
 from .extensions import db
-
-class ExampleRecord(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(120), nullable=False)
-
-    def __repr__(self):
-        return f"<ExampleRecord {self.title}>"
+from datetime import date
 
 class users(db.Model):
     UserID = db.Column(db.String(50), primary_key=True)
@@ -14,6 +8,9 @@ class users(db.Model):
     PhoneNum = db.Column(db.String(50), nullable=False)
     JoinDate = db.Column(db.Date, nullable=False)
 
+    assignments = db.relationship('a_status', backref='user', cascade='all, delete')
+    teams = db.relationship('team_mem', backref='user', cascade='all, delete')
+    
     def __repr__(self):
         return f"<User: {self.UserName}>"
     
@@ -22,6 +19,8 @@ class a_details(db.Model):
     TaskID = db.Column(db.String(50), primary_key=True)
     TaskName = db.Column(db.String(100), nullable=False)
     TaskDesc = db.Column(db.String(300), nullable=False)
+
+    status = db.relationship('a_status', backref='assignment', cascade='all, delete')
 
     def __repr__(self):
         return f"<Task: {self.TaskName}>"
@@ -40,6 +39,8 @@ class a_status(db.Model):
 class team_det(db.Model):
     TeamID = db.Column(db.String(50), primary_key=True)
     TeamName = db.Column(db.String(80), nullable=False)
+
+    members = db.relationship('team_mem', backref='team', cascade='all, delete')
 
     def __repr__(self):
         return f"<Team: {self.TeamName}>"
