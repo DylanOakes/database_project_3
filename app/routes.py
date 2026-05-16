@@ -27,7 +27,7 @@ def add_users():
     if request.method == 'POST':
         user_id = request.form['user_id']
         username = request.form['username']
-        email = request.form['email']
+        Email = request.form['email']
         phone_num = request.form['phone_num']
         join_date = request.form['join_date']
     
@@ -39,7 +39,7 @@ def add_users():
             flash('Username is required.', 'error')
             return redirect(url_for('main.add_users'))
         
-        if not email.strip():
+        if not Email.strip():
             flash('Email is required.', 'error')
             return redirect(url_for('main.add_users'))
         
