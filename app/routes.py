@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from sqlalchemy import select, func
+from sqlalchemy import select
 from .extensions import db
+import datetime
+#from datetime import date
 
 from .models import (
     users,
@@ -18,8 +20,8 @@ def index():
 
 
 @main.route('/users')
-def users():
-    items = select(users)
+def get_users():
+    items = db.select(users)
     all_users = db.session.execute(items).scalars().all()
 
     # all_users = users.query.all()
@@ -30,35 +32,36 @@ def add_users():
     if request.method == 'POST':
         user_id = request.form['user_id']
         username = request.form['username']
-        Email = request.form['email']
+        email = request.form['email']
         phone_num = request.form['phone_num']
-        join_date = request.form['join_date']
-    
+        join_date = datetime.datetime.strptime(request.form['join_date'], '%Y-%m-%d').date()
+
         if not user_id.strip():
             flash('User ID is required.', 'error')
             return redirect(url_for('main.add_users'))
-        
+
         if not username.strip():
             flash('Username is required.', 'error')
             return redirect(url_for('main.add_users'))
         
-        if not Email.strip():
+        if not email.strip():
             flash('Email is required.', 'error')
             return redirect(url_for('main.add_users'))
         
-        if users.query.filter_by(email = Email).first():
+        existing_user = select(users).where(users.Email == email)
+        existing_user = db.session.execute(existing_user).scalar_one_or_none()
+        if existing_user:
             flash('Email already exists.', 'error')
             return redirect(url_for('main.add_users'))
         
-        new_user = users(UserID=user_id, UserName=username, email=Email, PhoneNum=phone_num, JoinDate=join_date)
-        
+        new_user = users(UserID=user_id, UserName=username, Email=email, PhoneNum=phone_num, JoinDate=join_date)
         db.session.add(new_user)
         db.session.commit()
 
         flash('User added!')
-        return redirect(url_for('main.users'))
+        return redirect(url_for('main.get_users'))
     
-    return render_template('add_users.html')
+    return render_template('users.html')
 
 @main.route('/users/delete/<string:user_id>')
 def delete_user(user_id):
@@ -66,7 +69,7 @@ def delete_user(user_id):
     db.session.delete(user)
     db.session.commit()
     flash('User deleted!', 'warning')
-    return redirect(url_for('main.users'))
+    return redirect(url_for('main.get_users'))
 
 @main.route('/assignments')
 def assignments():
