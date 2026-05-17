@@ -73,9 +73,21 @@ def delete_user(user_id):
 
 @main.route('/assignments')
 def assignments():
-    items = db.select(users)
-    all_users = db.session.execute(items).scalars().all()
-    return render_template('assignments.html', users=all_users)
+    all_assignments = db.session.query(
+        a_status.TaskID,
+        a_status.UserID,
+        a_details.TaskName,
+        a_details.TaskDesc,
+        a_status.isComplete,
+        a_status.DueDate
+    ).join(
+        a_details,
+        a_status.TaskID == a_details.TaskID
+    ).all()
+    
+    #items= db.select(a_details).join(a_status, a_details.TaskID == a_status.TaskID)
+    #all_assignments = db.session.execute(items).scalars().all()
+    return render_template('assignments.html', tasks=all_assignments)
 
 @main.route('/assignments/add', methods=['GET', 'POST'])
 def add_assignment():
@@ -86,6 +98,12 @@ def add_assignment():
         task_desc = request.form['task_desc']
         is_complete = request.form['is_complete']
         due_date = datetime.datetime.strptime(request.form['due_date'], '%Y-%m-%d').date()
+
+        existing_assignment = select(a_status).where(a_status.TaskID == task_id and a_status.UserID == user_id)
+        existing_assignment = db.session.execute(existing_assignment).scalar_one_or_none()
+        if existing_assignment:
+            flash('This assignment is already assigned to the given user', 'error')
+            return redirect(url_for('main.add_assignment'))
 
         if not task_id.strip():
             flash('Task ID is required.', 'error')
@@ -127,8 +145,18 @@ def delete_assignment(task_id, user_id):
 
 @main.route('/teams')
 def teams():
-    data = team_det.query.all()
-    return render_template('teams.html', teams=data)
+    all_teams = db.session.query(
+        team_mem.TeamID,
+        team_mem.UserID,
+        team_det.TeamName,
+        team_mem.TeamJoinDate
+    ).join(
+        team_det,
+        team_mem.TeamID == team_det.TeamID
+    ).all()
+
+    #all_teams = team_det.query.all()
+    return render_template('teams.html', teams=all_teams)
 
 @main.route('/teams/add', methods=['GET', 'POST'])
 def add_team():
@@ -138,6 +166,12 @@ def add_team():
         u_id = request.form['user_id']
         t_name = request.form['team_name']
         join_date = datetime.datetime.strptime(request.form['join_date'], '%Y-%m-%d').date()
+
+        existing_team = select(team_mem).where(team_mem.TeamID == t_id and team_mem.UserID == u_id)
+        existing_team = db.session.execute(existing_team).scalar_one_or_none()
+        if existing_team:
+            flash('This user is already assigned to the given team', 'error')
+            return redirect(url_for('main.add_team'))
 
         if not t_id.strip():
             flash('Team ID is required.', 'error')
