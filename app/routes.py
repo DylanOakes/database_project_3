@@ -23,9 +23,8 @@ def index():
 def get_users():
     items = db.select(users)
     all_users = db.session.execute(items).scalars().all()
-
-    # all_users = users.query.all()
     return render_template('users.html', users=all_users)
+
 
 @main.route('/users/add', methods=['GET', 'POST'])
 def add_users():
@@ -71,22 +70,22 @@ def delete_user(user_id):
     flash('User deleted!', 'warning')
     return redirect(url_for('main.get_users'))
 
+
 @main.route('/assignments')
 def assignments():
-    data = a_status.query.all()
-    return render_template('assignments.html', assignments=data)
+    items = db.select(users)
+    all_users = db.session.execute(items).scalars().all()
+    return render_template('assignments.html', users=all_users)
 
 @main.route('/assignments/add', methods=['GET', 'POST'])
 def add_assignment():
-    u_list = users.query.all()
-
     if request.method == 'POST':
         task_id = request.form['task_id']
         user_id = request.form['user_id']
         task_name = request.form['task_name']
         task_desc = request.form['task_desc']
         is_complete = request.form['is_complete']
-        due_date = request.form['due_date']
+        due_date = datetime.datetime.strptime(request.form['due_date'], '%Y-%m-%d').date()
 
         if not task_id.strip():
             flash('Task ID is required.', 'error')
@@ -111,12 +110,13 @@ def add_assignment():
             db.session.rollback()
             flash(f'Error adding assignment: {str(e)}', 'error')
         
-        return redirect(url_for('assignments.html'))
+        return redirect(url_for('main.assignments'))
+    return render_template('assignments.html')
 
 
 @main.route('/assignments/delete/<string:task_id>/<string:user_id>')
 def delete_assignment(task_id, user_id):
-    task = a_status.query.filter_by(TaskID=task_id, UserID=user_id).first_or_404()
+    task = a_status.query.get_or_404((task_id, user_id))
     
     db.session.delete(task)
     db.session.commit()
@@ -132,13 +132,12 @@ def teams():
 
 @main.route('/teams/add', methods=['GET', 'POST'])
 def add_team():
-    user = users.query.all()
 
     if request.method == 'POST':
         t_id = request.form['team_id']
         u_id = request.form['user_id']
         t_name = request.form['team_name']
-        join_date = request.form['join_date']
+        join_date = datetime.datetime.strptime(request.form['join_date'], '%Y-%m-%d').date()
 
         if not t_id.strip():
             flash('Team ID is required.', 'error')
@@ -152,7 +151,7 @@ def add_team():
             flash('Team Name is required.', 'error')
             return redirect(url_for('main.add_team'))
 
-        teams = team_det(TeamID=t_id, UserID=u_id,TeamName=t_name)
+        teams = team_det(TeamID=t_id, TeamName=t_name)
         db.session.add(teams)
         db.session.flush()
 
@@ -162,5 +161,15 @@ def add_team():
 
         flash('Team added successfully', 'success')
         return redirect(url_for('main.teams'))
+    
+    return render_template('teams.html')
 
 
+@main.route('/teams/delete/<string:team_id>/<string:user_id>')
+def delete_team(team_id, user_id):
+    team = team_mem.query.get_or_404((team_id, user_id))
+    db.session.delete(team)
+    db.session.commit()
+
+    flash('Team member removed', 'warning')
+    return redirect(url_for('main.teams'))

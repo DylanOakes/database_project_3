@@ -1,3 +1,7 @@
+# Project Description
+This project is meant to serve as a way to record information regarding students, the students' school assignments, and any teams a student may be a part of. It is meant to be a bite-sized version of my senior design project, which would implement a Pomodoro-styled timer in order help user's time management. Since I'm pressed on time, I decided to make a simple assignment manager instead.
+
+
 # Stack Outline App
 
 Barebones project outline for:
