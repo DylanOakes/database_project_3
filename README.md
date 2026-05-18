@@ -24,11 +24,17 @@ stack_outline_app/
     static/css/styles.css
     templates/base.html
     templates/index.html
+    templates/assignment.html
+    templates/teams.html
+    templates/users.html
   config.py
   run.py
   requirements.txt
   .env.example
   .gitignore
+  NORMALIZATION.md
+  README.md
+  final_schema.sql
 ```
 
 ## Quick Start
